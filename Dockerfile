@@ -13,6 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 # netstat -tan | grep ESTABLISHED
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     net-tools \
+    virtualenv \
     # install all necessary dependencies for GHDL
     gnat \
     zlib1g-dev \
