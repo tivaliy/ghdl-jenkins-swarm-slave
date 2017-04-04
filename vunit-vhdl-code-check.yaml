@@ -1,0 +1,60 @@
+- job:
+    name: vunit-vhdl-code-check
+    description: |
+      VHDL project check Job based on VUnit and GHDL tools
+    project-type: freestyle
+    node: swarm
+    concurrent: false
+    builders:
+      - shell: |
+         virtualenv vunit
+         . vunit/bin/activate
+         pip install vunit-hdl
+
+         cd src
+
+         cat > run.py << EOF
+         import glob
+         import os
+
+         from vunit import VUnit
+
+         prj_root = os.path.dirname(os.path.abspath(__file__))
+         pattern = "*.vhd"
+
+         ui = VUnit.from_argv()
+
+         for root, dirs, _ in os.walk(prj_root):
+             # Skip searching in hidden directories
+             dirs[:] = [d for d in dirs if not d.startswith('.')]
+             if glob.glob(os.path.join(root, pattern)):
+                 lib_name = os.path.basename(os.path.normpath(root)) + '_lib'
+                 # Create standalone library from directory that contains *.vhd files
+                 user_lib = ui.add_library(lib_name)
+                 user_lib.add_source_files(os.path.join(root, "*.vhd"))
+         ui.main()
+         EOF
+
+         python run.py -v
+    scm:
+      - git:
+         remotes:
+           - gerrit:
+               url: 'http://review.example.com/$GERRIT_PROJECT'
+               refspec: 'refs/changes/*:refs/changes/*'
+         branches:
+          - '$GERRIT_REFSPEC'
+    triggers:
+      - gerrit:
+          trigger-on:
+            - patchset-created-event
+          projects:
+            - project-compare-type: ANT
+              project-pattern: '**/vhdl'
+              branches:
+                - branch-compare-type: ANT
+                  branch-pattern: '**'
+          custom-url: '* $JOB_NAME $BUILD_URL'
+    wrappers:
+      - ansicolor:
+          colormap: xterm

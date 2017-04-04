@@ -27,6 +27,14 @@ To run a Docker container passing [any parameters](https://wiki.jenkins-ci.org/d
 
 [VUnit](http://vunit.github.io/) is an open source unit testing framework for VHDL/SystemVerilog.
 It can be easily installed and used in `ghdl-jenkins-swarm-slave` to perform unit testing jobs of VHDL source code in Jenkins.
+
+#### Create `vunit-vhdl-code-check` Job in Jenkins (out-of-the-box)
+
+1. Configure `jenkins_jobs.ini` file (for more details please refer to [JJB configuration file](https://docs.openstack.org/infra/jenkins-job-builder/execution.html#configuration-file))
+2. Configure `vunit-vhdl-code-check.yaml` file to meet your Jenkins configuration.
+3. Run `create-job.sh` script
+
+#### Create `vunit-vhdl-code-check` Job in Jenkins (manually)
 Add the following code to `Build` &#8594; `Execute shell` section of newly created job in Jenkins:
 
 ```bash
